@@ -6,12 +6,16 @@
   const elem = document.querySelector("body");
   const canvas = document.querySelector("canvas");
   const firstScreen = document.querySelector(".display-before");
+  const wordCounter = document.querySelector(".word-num");
+  const wordCounterContainer = document.querySelector(".word-num-container");
+  const congratulations = document.querySelector(".congratulations");
+  const confettiContainer = document.querySelector(".container");
   ///aici avem functia folosita pentru a renderui elementele pe pagina
   let gameArr = [
     [ "L", "D", "N", "K", "H", "W", "J", "M", "H" ],
     [  "O", "I", "U", "X", "E","J" , "V", "Z", "I"],
     ["I","B","G","X","B","Q","Q","C","W"],
-    ["S","D","W","O","K","P","V","F","Q"],
+    ["S","D","I","S","U","S","V","F","Q"],
     ["Y","J","D","C","P","F","C","K","S"],
     ["U","D","N","S","O","A","K","H","A"],
     ["G","M","D","Z","I","M","V","P","B"],
@@ -21,7 +25,9 @@
 ];
 let gameColors = ["rgba(255, 255, 0, 0.5)","rgba(255,0,0,0.5)","rgba(0, 204, 0,0.5)","rgba(0, 51, 204,0.5)","rgba(204, 0, 153,0.5)","rgb(255, 102, 0,0.5)"];
 let squareLetter = [];
-let wordsToBeFound = ["timotei","lois","pavel","pipa"];
+let wordsToBeFound = ["timotei","lois","pavel","isus"];
+let foundedWords = 0;
+const wordsCount = wordsToBeFound.length;
 
   const render = function(){
 
@@ -42,8 +48,14 @@ let wordsToBeFound = ["timotei","lois","pavel","pipa"];
     }
     context.fillStyle = "#fff";
     context.fillRect(0,0,context.canvas.width,context.canvas.height);
-
+    wordCounter.textContent = `${foundedWords}/${wordsCount}`;
   };
+
+
+function updateWords(){
+
+      wordCounter.textContent = `${foundedWords}/${wordsCount}`;
+}
 
 if(document.documentElement.clientWidth<508)
 {
@@ -129,11 +141,11 @@ if(document.documentElement.clientWidth<508)
   */
   if(document.documentElement.clientWidth<=350)
   {
-    context.font = "13pt sans-serif";
+    context.font = "10pt sans-serif";
     initialX=10;
-    initialY = 28;
-    spaceX = 54-returnRes()*2.4;
-    spaceY = 54-returnRes()*2.5;
+    initialY = 18;
+    spaceX = 54-returnRes()*2.2;
+    spaceY = 54-returnRes()*2.2;
   }
   else if(document.documentElement.clientWidth>=500){
       context.font = "13pt sans-serif";
@@ -219,12 +231,12 @@ let currentElem = 0;
       firstY:letterY,
       finalX:letterX+rectWidth,
       finalY:letterY+rectHeight,
-      letter:gameArr[currentElem],
+      letter:gameArr[i][j],
       i:j,
       j:i
     }
     squareLetter.push(myObj);
-    // context.fillRect(letterX,letterY,rectWidth,rectHeight);
+     // context.fillRect(letterX,letterY,rectWidth,rectHeight);
     letterX+=rectWidth;
 
     }
@@ -250,8 +262,6 @@ let currentElem = 0;
 
   let chosenColor = null;
   function gameLogic(evt){
-
-
     /*
       Pe diagonala secundara suma lui i si j este aceaisi
       Asa ca pentru a verifica corectitudinea jocului vom proceda asa:
@@ -264,35 +274,68 @@ let currentElem = 0;
 
     */
 
+
       let mouseX = evt.clientX-canvas.getBoundingClientRect().left;
       let mouseY = evt.clientY-canvas.getBoundingClientRect().top;
       var isTouch = (('ontouchstart' in window) || (navigator.msMaxTouchPoints > 0));
 
       data++;
+
       if(isTouch)
       {
-        console.log(evt);
-        console.log(evt.targetTouches[0]);
-        console.log("--------------------------------------------------------------------------");
-        var rect = canvas.getBoundingClientRect();
-        if(data === 2)
-        {
-          mouseX = event.changedTouches[event.changedTouches.length-1].pageX - rect.left;
-          mouseY = event.changedTouches[event.changedTouches.length-1].pageY - rect.top;
 
+        var rect = canvas.getBoundingClientRect();
+        // if(data === 2)
+        // {
+        //
+        //             mouseX = evt.targetTouches[0].pageX - rect.left;
+        //             mouseY = evt.targetTouches[0].pageY - rect.top;
+        //
+        //
+        //   data = 0;
+        //   // console.log(evt);
+        //   // console.log("Prima data");
+        //
+        // }
+        // else{
+        //
+        //   mouseX = evt.changedTouches[evt.changedTouches.length-1].pageX - rect.left;
+        //   mouseY = evt.changedTouches[even.changedTouches.length-1].pageY - rect.top;
+        //
+        // }
+        if(evt.type === "touchstart")
+        {
+          mouseX = evt.targetTouches[0].pageX-rect.left;
+          mouseY = evt.targetTouches[0].pageY-rect.top;
         }
-        else{
-          mouseX = evt.targetTouches[0].pageX - rect.left;
-          mouseY = evt.targetTouches[0].pageY - rect.top;
+        else if(evt.type === "touchend")
+        {
+          mouseX = evt.changedTouches[0].pageX - rect.left;
+          mouseY = evt.changedTouches[0].pageY - rect.top;
         }
+
 
       }
 
       context.fillStyle="red";
 
+      function win(){
+        setTimeout(function(){
+            canvas.classList.add("no-display");
+            wordCounterContainer.classList.add("no-display");
+            congratulations.classList.remove("no-display");
+            confettiContainer.classList.remove("no-display");
+            document.body.setAttribute("style","overflow-x:hidden; overflow-y:hidden");
+        },500);
+
+
+      }
+
+
       for(const elem of squareLetter){
         if(mouseX>elem.firstX && mouseX<elem.finalX && mouseY>elem.firstY && mouseY<elem.finalY)
         {
+
           if(startSquare===null)
           {
             ///asta inseamna ca am dat doar startul
@@ -318,10 +361,28 @@ let currentElem = 0;
 
             else{
               ///implementarea de verificare
+
               let aux;
 
+              let myLineWidth;
+              ///aici ne vom ocupa de grosimea linii in functie de dimensiunea ecranului
+              if(document.documentElement.clientWidth<=300)
+              {
+                myLineWidth = 20;
+              }
+              else if(document.documentElement.clientWidth<400)
+              {
+                myLineWidth = 30;
+              }
+              else if(document.documentElement.clientWidth<500)
+              {
+                myLineWidth =30;
 
-              
+              }
+              else{
+                myLineWidth = 35;
+
+              }
 
 
               if(startSquare.i === endSquare.i)
@@ -344,17 +405,57 @@ let currentElem = 0;
                 resString = resString.toLowerCase();
                 if(wordsToBeFound.indexOf(resString)!=-1)
                 {
-                  context.beginPath();
-                  context.moveTo(startSquare.firstX+15,startSquare.firstY+25);
-                  context.lineTo(endSquare.finalX-14,endSquare.finalY-31);
-                  context.lineWidth = 35;
-                  context.strokeStyle = chosenColor;
-                  context.lineCap = "round";
-                  context.stroke();
+                  foundedWords++;
+                  updateWords();
+                  if(document.documentElement.clientWidth>500)
+                  {
+                    context.beginPath();
+                    context.moveTo(startSquare.firstX+rectWidth/3,startSquare.firstY+(rectWidth/2));
+                    context.lineTo(endSquare.finalX-14,endSquare.finalY-(rectWidth/2));
+                    context.lineWidth = myLineWidth;
+                    context.strokeStyle = chosenColor;
+                    context.lineCap = "round";
+                    context.stroke();
+                  }
+
+                    else if(document.documentElement.clientWidth<=400){
+                      context.beginPath();
+                      context.moveTo(startSquare.firstX+rectWidth/2.5,startSquare.firstY+rectWidth/2.5);
+                      context.lineTo(endSquare.finalX-rectWidth/2,endSquare.finalY-rectWidth/1.6);
+                      context.lineWidth = myLineWidth;
+                      context.strokeStyle = chosenColor;
+                      context.lineCap = "round";
+                      context.stroke();
+                    }
+
+                  else if(document.documentElement.clientWidth<=500){
+                    context.beginPath();
+                    context.moveTo(startSquare.firstX+rectWidth/8,startSquare.firstY+rectWidth/1.6);
+                    context.lineTo(endSquare.finalX-rectWidth/3,endSquare.finalY-rectWidth/2.4);
+                    context.lineWidth = myLineWidth;
+                    context.strokeStyle = chosenColor;
+                    context.lineCap = "round";
+                    context.stroke();
+                  }
+
                   wordsToBeFound.splice(wordsToBeFound.indexOf(resString),1);
+                  canvas.classList.add("correct-answer");
+                  setTimeout(function(){
+                    canvas.classList.remove("correct-answer");
+                  },400);
+
+                  if(wordsCount === foundedWords)
+                  {
+                    win();
+                  }
+
                   chosenColor = null;
                 }
                 else{
+                  canvas.classList.add("canvas-shadow");
+                  setTimeout(function(){
+                    canvas.classList.remove("canvas-shadow");
+                  },400);
                   audio.play();
                 }
 
@@ -383,17 +484,46 @@ let currentElem = 0;
                 resString = resString.toLowerCase();
                 if(wordsToBeFound.indexOf(resString)!=-1)
                 {
-                  context.beginPath();
-                  context.moveTo(startSquare.firstX+(rectWidth-12)/2,startSquare.firstY+15);
-                  context.lineTo(endSquare.finalX-(rectWidth+10)/2,endSquare.finalY-15);
-                  context.lineWidth = 35;
-                  context.strokeStyle = chosenColor;
-                  context.lineCap = "round";
-                  context.stroke();
+                  foundedWords++;
+                  updateWords();
+                  if(document.documentElement.clientWidth<=300)
+                  {
+                    context.beginPath();
+                    context.moveTo(startSquare.firstX+(rectWidth-5)/2,startSquare.firstY+15);
+                    context.lineTo(endSquare.finalX-(rectWidth+5)/2,endSquare.finalY-15);
+                    context.lineWidth = myLineWidth;
+                    context.strokeStyle = chosenColor;
+                    context.lineCap = "round";
+                    context.stroke();
+                  }
+                  else{
+                    context.beginPath();
+                    context.moveTo(startSquare.firstX+(rectWidth-12)/2,startSquare.firstY+15);
+                    context.lineTo(endSquare.finalX-(rectWidth+10)/2,endSquare.finalY-15);
+                    context.lineWidth = myLineWidth;
+                    context.strokeStyle = chosenColor;
+                    context.lineCap = "round";
+                    context.stroke();
+                  }
+
                   wordsToBeFound.splice(wordsToBeFound.indexOf(resString),1);
+                  canvas.classList.add("correct-answer");
+                  setTimeout(function(){
+                    canvas.classList.remove("correct-answer");
+                  },400);
+
+                  if(wordsCount === foundedWords)
+                  {
+                    win();
+                  }
+
                   chosenColor = null;
                 }
                 else{
+                  canvas.classList.add("canvas-shadow");
+                  setTimeout(function(){
+                    canvas.classList.remove("canvas-shadow");
+                  },400);
                   audio.play();
                 }
 
@@ -432,17 +562,67 @@ let currentElem = 0;
 
               if(wordsToBeFound.indexOf(resString)!=-1  || wordsToBeFound.indexOf(reverseString)!=-1)
               {
-                context.beginPath();
-                context.moveTo(startSquare.firstX+rectWidth-15,startSquare.firstY+15);
-                context.lineTo(endSquare.finalX-rectWidth+10,endSquare.finalY-15);
-                context.lineWidth = 35;
-                context.strokeStyle = chosenColor;
-                context.lineCap = "round";
-                context.stroke();
+                foundedWords++;
+                updateWords();
+                if(document.documentElement.clientWidth<300)
+                {
+
+                  context.beginPath();
+                  context.moveTo(startSquare.firstX+rectWidth/2,startSquare.firstY+rectWidth/2);
+                  context.lineTo(endSquare.finalX-rectWidth/2,endSquare.finalY-rectWidth/2);
+                  context.lineWidth = myLineWidth;
+                  context.strokeStyle = chosenColor;
+                  context.lineCap = "round";
+                  context.stroke();
+                }
+
+                else if(document.documentElement.clientWidth>500)
+                {
+                  context.beginPath();
+                  context.moveTo(startSquare.firstX+rectWidth-15,startSquare.firstY+15);
+                  context.lineTo(endSquare.finalX-rectWidth+10,endSquare.finalY-15);
+                  context.lineWidth = myLineWidth;
+                  context.strokeStyle = chosenColor;
+                  context.lineCap = "round";
+                  context.stroke();
+
+                }
+                else if(document.documentElement.clientWidth<=385)
+                {
+                  context.beginPath();
+                  context.moveTo(startSquare.firstX+rectWidth/4,startSquare.firstY+rectWidth/3);
+                  context.lineTo(endSquare.finalX-rectWidth,endSquare.finalY-rectWidth/2);
+                  context.lineWidth = myLineWidth;
+                  context.strokeStyle = chosenColor;
+                  context.lineCap = "round";
+                  context.stroke();
+                }
+                else {
+                  context.beginPath();
+                  context.moveTo(startSquare.firstX+rectWidth/2,startSquare.firstY+rectWidth/3);
+                  context.lineTo(endSquare.finalX-rectWidth/1.4,endSquare.finalY-rectWidth/2);
+                  context.lineWidth = myLineWidth;
+                  context.strokeStyle = chosenColor;
+                  context.lineCap = "round";
+                  context.stroke();
+                }
+
                 wordsToBeFound.splice(wordsToBeFound.indexOf(resString),1);
+                canvas.classList.add("correct-answer");
+                setTimeout(function(){
+                  canvas.classList.remove("correct-answer");
+                },400);
+                if(wordsCount === foundedWords)
+                {
+                  win();
+                }
                 chosenColor = null;
               }
               else{
+                canvas.classList.add("canvas-shadow");
+                setTimeout(function(){
+                  canvas.classList.remove("canvas-shadow");
+                },400);
                 audio.play();
               }
 
@@ -473,18 +653,32 @@ let currentElem = 0;
                 resString = resString.toLowerCase();
                 if(wordsToBeFound.indexOf(resString)!=-1)
                 {
+                  foundedWords++;
+                  updateWords();
                   context.beginPath();
                   context.moveTo(startSquare.firstX+15,startSquare.firstY+15);
                   context.lineTo(endSquare.finalX-15,endSquare.finalY-15);
-                  context.lineWidth = 35;
+                  context.lineWidth = myLineWidth;
                   context.strokeStyle = chosenColor;
                   context.lineCap = "round";
                   context.stroke();
                   wordsToBeFound.splice(wordsToBeFound.indexOf(resString),1);
+                  canvas.classList.add("correct-answer");
+                  setTimeout(function(){
+                    canvas.classList.remove("correct-answer");
+                  },400)
                   chosenColor = null;
+                  if(wordsCount === foundedWords)
+                  {
+                    win();
+                  }
 
                 }
                 else{
+                  canvas.classList.add("canvas-shadow");
+                  setTimeout(function(){
+                    canvas.classList.remove("canvas-shadow");
+                  },200);
                   audio.play();
                 }
 
@@ -512,8 +706,9 @@ let currentElem = 0;
   */
 
   function startGame(){
-    // firstScreen.classList.add("no-display");
+    firstScreen.classList.add("no-display");
     canvas.classList.remove("no-display");
+    wordCounterContainer.classList.remove("no-display");
     render();
     setTimeout(function(){
       draw();
@@ -532,13 +727,12 @@ let currentElem = 0;
 
   render();
   window.addEventListener("resize",handleResize);
-  // playBtn.addEventListener("click",startGame);
-  startGame();
+  playBtn.addEventListener("click",startGame);
   canvas.addEventListener("mousedown",gameLogic);
   canvas.addEventListener("mouseup",gameLogic);
 
-  canvas.addEventListener("touchstart",gameLogic);
-  canvas.addEventListener("touchend",gameLogic);
+  canvas.addEventListener("touchstart",gameLogic,{passive:true});
+  canvas.addEventListener("touchend",gameLogic,{passive:true});
 
 
 })();
