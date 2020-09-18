@@ -25,7 +25,7 @@
 ];
 let gameColors = ["rgba(255, 255, 0, 0.5)","rgba(255,0,0,0.5)","rgba(0, 204, 0,0.5)","rgba(0, 51, 204,0.5)","rgba(204, 0, 153,0.5)","rgb(255, 102, 0,0.5)"];
 let squareLetter = [];
-let wordsToBeFound = ["timotei","lois","pavel","isus"];
+let wordsToBeFound = ["timotei","lois","pavel"];
 let foundedWords = 0;
 const wordsCount = wordsToBeFound.length;
 
