@@ -35,7 +35,7 @@ const wordsCount = wordsToBeFound.length;
     let dimession = "";
     let marginText="margin-top:0px";
     canvas.removeAttribute("style");
-    if(document.documentElement.clientWidth>505)
+    if(document.documentElement.clientWidth>=500)
     {
       marginText="margin-top:40px";
       context.canvas.width = 500;
@@ -104,30 +104,47 @@ if(document.documentElement.clientWidth<508)
 
   spaceX = 30;
   spaceY = 40;
-
-  if(document.documentElement.clientWidth<=350)
-  {
-    context.font = "10pt sans-serif";
-    initialX=10;
-    initialY = 18;
-    spaceX = 54-returnRes()*2.2;
-    spaceY = 54-returnRes()*2.2;
-  }
-  else if(document.documentElement.clientWidth>=500){
-      context.font = "13pt sans-serif";
+  if(document.documentElement.clientWidth>=500){
+    context.font = "13pt sans-serif";
       initialX = 15;
-      initialY = 29;
-      spaceX = 56;
+      initialY = 25;
+      spaceX = 55;
       spaceY = 55.9;
-    }
-    else{
-        context.font = "13pt sans-serif";
-        initialX=10;
-        initialY = 30;
-        spaceX = 54-returnRes()*2.5;
-        spaceY = 54-returnRes()*2.5;
+  }
+  else{
+    let ratio = 20/500;
+    let myFontSize = document.documentElement.clientWidth*ratio;
+    context.font = `${myFontSize}px sans-serif`;
+    initialX = (10/500)*canvas.width;
+    initialY = (29/500)*canvas.height;
+    spaceX = (56/500)*canvas.width;
+    spaceY = (55.9/500)*canvas.height;
+  }
 
-    }
+  //
+  // if(document.documentElement.clientWidth<=350)
+  // {
+  //   context.font = "10pt sans-serif";
+  //   initialX=10;
+  //   initialY = 18;
+  //   spaceX = 54-returnRes()*2.2;
+  //   spaceY = 54-returnRes()*2.2;
+  // }
+  // else if(document.documentElement.clientWidth>=500){
+  //     context.font = "13pt sans-serif";
+  //     initialX = 15;
+  //     initialY = 29;
+  //     spaceX = 56;
+  //     spaceY = 55.9;
+  //   }
+  //   else{
+  //       context.font = "13pt sans-serif";
+  //       initialX=10;
+  //       initialY = 30;
+  //       spaceX = 54-returnRes()*2.5;
+  //       spaceY = 54-returnRes()*2.5;
+  //
+  //   }
 
   letterX = initialX;
   letterY = initialY;
@@ -304,28 +321,31 @@ let currentElem = 0;
 
               let myLineWidth;
               ///aici ne vom ocupa de grosimea linii in functie de dimensiunea ecranului
-              if(document.documentElement.clientWidth<=300)
-              {
-                myLineWidth = 20;
-              }
-              else if(document.documentElement.clientWidth<400)
-              {
-                myLineWidth = 30;
-              }
-              else if(document.documentElement.clientWidth<500)
-              {
-                myLineWidth =30;
-
+              // if(document.documentElement.clientWidth<=300)
+              // {
+              //   myLineWidth = 20;
+              // }
+              // else if(document.documentElement.clientWidth<400)
+              // {
+              //   myLineWidth = 30;
+              // }
+              // else if(document.documentElement.clientWidth<500)
+              // {
+              //   myLineWidth =30;
+              //
+              // }
+              if(document.documentElement.clientWidth<500){
+                myLineWidth = (35/500)*canvas.width;
               }
               else{
                 myLineWidth = 35;
 
               }
-                console.log("start Square");
-                console.log(startSquare);
-                console.log("end Square");
-                console.log(endSquare);
-                console.log("-------------------");
+                // console.log("start Square");
+                // console.log(startSquare);
+                // console.log("end Square");
+                // console.log(endSquare);
+                // console.log("-------------------");
 
 
 
@@ -354,32 +374,23 @@ let currentElem = 0;
                   if(document.documentElement.clientWidth>500)
                   {
                     context.beginPath();
-                    context.moveTo(startSquare.firstX+rectWidth/3,startSquare.firstY+(rectWidth/2));
-                    context.lineTo(endSquare.finalX-14,endSquare.finalY-(rectWidth/2));
+                    context.moveTo(startSquare.firstX+rectWidth/3,startSquare.firstY+(rectWidth/2.5));
+                    context.lineTo(endSquare.finalX-rectWidth/2.8,endSquare.finalY-(rectWidth/1.6));
                     context.lineWidth = myLineWidth;
                     context.strokeStyle = chosenColor;
                     context.lineCap = "round";
                     context.stroke();
                   }
 
-                    else if(document.documentElement.clientWidth<=400){
-                      context.beginPath();
-                      context.moveTo(startSquare.firstX+rectWidth/2.5,startSquare.firstY+rectWidth/2.5);
-                      context.lineTo(endSquare.finalX-rectWidth/2,endSquare.finalY-rectWidth/1.6);
-                      context.lineWidth = myLineWidth;
-                      context.strokeStyle = chosenColor;
-                      context.lineCap = "round";
-                      context.stroke();
-                    }
-
-                  else if(document.documentElement.clientWidth<=500){
+              else if(document.documentElement.clientWidth<=500){
                     context.beginPath();
-                    context.moveTo(startSquare.firstX+rectWidth/8,startSquare.firstY+rectWidth/1.6);
-                    context.lineTo(endSquare.finalX-rectWidth/3,endSquare.finalY-rectWidth/2.4);
+                    context.moveTo(startSquare.firstX+rectWidth/2.5,startSquare.firstY+rectWidth/2.5);
+                    context.lineTo(endSquare.finalX-rectWidth/2,endSquare.finalY-rectWidth/1.6);
                     context.lineWidth = myLineWidth;
                     context.strokeStyle = chosenColor;
                     context.lineCap = "round";
-                    context.stroke();
+                    context.stroke()
+
                   }
 
                   wordsToBeFound.splice(wordsToBeFound.indexOf(resString),1);
@@ -509,12 +520,12 @@ let currentElem = 0;
               {
                 foundedWords++;
                 updateWords();
-                if(document.documentElement.clientWidth<300)
+                if(document.documentElement.clientWidth<300 )
                 {
 
                   context.beginPath();
-                  context.moveTo(startSquare.firstX+rectWidth/2,startSquare.firstY+rectWidth/2);
-                  context.lineTo(endSquare.finalX-rectWidth/2,endSquare.finalY-rectWidth/2);
+                  context.moveTo(startSquare.firstX+rectWidth/2.3,startSquare.firstY+rectWidth/2);
+                  context.lineTo(endSquare.finalX-rectWidth/1.5,endSquare.finalY-rectWidth/2);
                   context.lineWidth = myLineWidth;
                   context.strokeStyle = chosenColor;
                   context.lineCap = "round";
@@ -524,19 +535,20 @@ let currentElem = 0;
                 else if(document.documentElement.clientWidth>500)
                 {
                   context.beginPath();
-                  context.moveTo(startSquare.firstX+rectWidth-15,startSquare.firstY+15);
-                  context.lineTo(endSquare.finalX-rectWidth+10,endSquare.finalY-15);
+                  context.moveTo(startSquare.firstX+rectWidth/2.3,startSquare.firstY+rectWidth/2);
+                  context.lineTo(endSquare.finalX-rectWidth/1.5,endSquare.finalY-rectWidth/2);
                   context.lineWidth = myLineWidth;
                   context.strokeStyle = chosenColor;
                   context.lineCap = "round";
                   context.stroke();
+
 
                 }
                 else if(document.documentElement.clientWidth<=385)
                 {
                   context.beginPath();
                   context.moveTo(startSquare.firstX+rectWidth/1.9,startSquare.firstY+rectWidth/3);
-                  context.lineTo(endSquare.finalX-rectWidth/1.9,endSquare.finalY-rectWidth/2);
+                  context.lineTo(endSquare.finalX-rectWidth/1.9,endSquare.finalY-rectWidth/1.7);
                   context.lineWidth = myLineWidth;
                   context.strokeStyle = chosenColor;
                   context.lineCap = "round";
@@ -601,7 +613,7 @@ let currentElem = 0;
                   foundedWords++;
                   updateWords();
                   context.beginPath();
-                  context.moveTo(startSquare.firstX+15,startSquare.firstY+15);
+                  context.moveTo(startSquare.firstX+rectWidth/2.3,startSquare.firstY+rectWidth/2.5);
                   context.lineTo(endSquare.finalX-15,endSquare.finalY-15);
                   context.lineWidth = myLineWidth;
                   context.strokeStyle = chosenColor;
