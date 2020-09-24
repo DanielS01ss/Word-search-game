@@ -13,19 +13,20 @@
   ///aici avem functia folosita pentru a renderui elementele pe pagina
   let gameArr = [
     [ "L", "D", "N", "K", "H", "W", "J", "M", "H" ],
-    [  "O", "I", "U", "X", "E","J" , "V", "Z", "I"],
+    [  "O", "T", "I", "M", "O","T" , "E", "I", "I"],
     ["I","B","G","X","B","Q","Q","C","W"],
     ["S","D","I","S","U","S","V","F","Q"],
-    ["Y","J","D","C","P","F","C","K","S"],
-    ["U","D","N","S","O","A","K","H","A"],
-    ["G","M","D","Z","I","M","V","P","B"],
-    ["T","I","M","O","T","E","I","E","D"],
-    ["M","A","B","A","O","P","W","C","L"]
+    ["Y","J","D","C","P","F","H","K","S"],
+    ["U","D","N","S","O","A","K","H","I"],
+    ["G","M","D","Z","R","M","V","S","B"],
+    ["T","I","M","O","T","E","U","E","D"],
+    ["I","S","U","S","T","E","I","C","L"]
 
 ];
 let gameColors = ["rgba(255, 255, 0, 0.5)","rgba(255,0,0,0.5)","rgba(0, 204, 0,0.5)","rgba(0, 51, 204,0.5)","rgba(204, 0, 153,0.5)","rgb(255, 102, 0,0.5)"];
 let squareLetter = [];
-let wordsToBeFound = ["timotei","lois","pavel"];
+let wordsToBeFound = ["timotei","lois","pavel","isus","har"];
+
 let foundedWords = 0;
 const wordsCount = wordsToBeFound.length;
 
@@ -101,44 +102,9 @@ if(document.documentElement.clientWidth<508)
    context.strokeStyle="#000";
    context.fillStyle = "#000";
 
-
-
-  ///aici stabilim in functie de dimensiunea ecranului care trebuie sa fie
-  ///distanta dintre litere
   spaceX = 30;
   spaceY = 40;
 
-
-  //  if(document.documentElement.clientWidth<=400)
-  // {
-  //   spaceX = 33;
-  //   spaceY = 35;
-  //   let amount = returnRes(document.documentElement.clientWidth);
-  //   spaceX = spaceX - amount*1.2;
-  //   spaceY = spaceY - amount*1.3;
-  //   initialX = 15;
-  //   initialY = 30;
-  //   context.font = "10pt sans-serif";
-  // }
-  // else if (document.documentElement.clientWidth<=500)
-  // {
-  //
-  //   spaceX = 33;
-  //   spaceY = 55;
-  //   let amount = returnRes(document.documentElement.clientWidth);
-  //   spaceX = spaceX - amount*5.5;
-  //   spaceY = spaceY - amount*2.3;
-  //   initialX = 0;
-  //   initialY = 25;
-  //   context.font = "13pt sans-serif";
-  // }
-
-  /*
-    O data la 20 px scadem 1 px din spaceX si 2 px din spaceY
-    initial
-    spaceX =25;
-    spaceY = 52;
-  */
   if(document.documentElement.clientWidth<=350)
   {
     context.font = "10pt sans-serif";
@@ -166,34 +132,6 @@ if(document.documentElement.clientWidth<508)
   letterX = initialX;
   letterY = initialY;
 
-
-  ///desenare litere pe ecran
-/*
-  Fiecare litera va avea un patratel unde va sta si patratul va avea
-  un padding standard la ecrane mari si la restul nu
-
-  DIMENSIUNEA ESTE SPACEX
-
-  Vom avea si aicea doua implementari
-   1.Pentru desktop si tot ce este peste 505 pixeli
-      -> aici este destul de simplu intrucat dimensiuniile la patrate
-        sunt stabilite
-   2.Pentru telefoane ( tot ce este sub 505 pixeli)
-    ->aicea va trebui sa generam un algoritm care sa determine dimensiuniile
-*/
-
-/*
-  Pentru de la ECRAN MARE >1000 PX pana la 518px avem asa:
-       context.fillRect(letterX-5,letterY-38,spaceX-1,spaceY-1);
-
-*/
-
-
-// context.fillRect(letterX-3,letterY-20,spaceX-5,spaceY-5);
-// letterX+=spaceX;
-// context.fillRect(letterX-3,letterY-20,spaceX-5,spaceY-5);
-// letterX+=spaceX;
-// context.fillRect(letterX-3,letterY-20,spaceX-5,spaceY-5);
 
 let currentElem = 0;
 
@@ -383,6 +321,12 @@ let currentElem = 0;
                 myLineWidth = 35;
 
               }
+                console.log("start Square");
+                console.log(startSquare);
+                console.log("end Square");
+                console.log(endSquare);
+                console.log("-------------------");
+
 
 
               if(startSquare.i === endSquare.i)
@@ -557,6 +501,7 @@ let currentElem = 0;
               let reverseString = tempArr.reverse();
               reverseString = reverseString.join("");
               reverseString = reverseString.toLowerCase();
+              tempArr.reverse();
               let resString = tempArr.join("");
               resString = resString.toLowerCase();
 
@@ -590,8 +535,8 @@ let currentElem = 0;
                 else if(document.documentElement.clientWidth<=385)
                 {
                   context.beginPath();
-                  context.moveTo(startSquare.firstX+rectWidth/4,startSquare.firstY+rectWidth/3);
-                  context.lineTo(endSquare.finalX-rectWidth,endSquare.finalY-rectWidth/2);
+                  context.moveTo(startSquare.firstX+rectWidth/1.9,startSquare.firstY+rectWidth/3);
+                  context.lineTo(endSquare.finalX-rectWidth/1.9,endSquare.finalY-rectWidth/2);
                   context.lineWidth = myLineWidth;
                   context.strokeStyle = chosenColor;
                   context.lineCap = "round";
