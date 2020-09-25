@@ -10,9 +10,11 @@
   const wordCounterContainer = document.querySelector(".word-num-container");
   const congratulations = document.querySelector(".congratulations");
   const confettiContainer = document.querySelector(".container");
+  let firstPosition;
   ///aici avem functia folosita pentru a renderui elementele pe pagina
   let rectWidth;
   let rectHeight;
+  let chosenColor = null;
   let gameArr = [
     [ "L", "D", "N", "K", "H", "W", "J", "M", "H" ],
     [  "O", "T", "I", "M", "O","T" , "E", "I", "I"],
@@ -25,17 +27,76 @@
     ["I","S","U","S","T","E","I","C","L"]
 
 ];
+let helpLineColor = "rgba(0,0,0,0.6)";
 let gameColors = ["rgba(255, 255, 0, 0.5)","rgba(255,0,0,0.5)","rgba(0, 204, 0,0.5)","rgba(0, 51, 204,0.5)","rgba(204, 0, 153,0.5)","rgb(255, 102, 0,0.5)"];
 let squareLetter = [];
 let wordsToBeFound = ["timotei","lois","pavel","isus","har"];
 const buffer = [];
+let dragging = false;
+let snapshot;
 
 let foundedWords = 0;
 const wordsCount = wordsToBeFound.length;
 
 ///Functia asta este folosita pentru a putea itera printre elementele
 /// care sunt in buffer si a le redesena
+function takeSnapshot(){
+   snapshot = context.getImageData(0,0,canvas.width,canvas.height);
+}
+
+function restoreSnapshot(){
+    context.putImageData(snapshot,0,0);
+}
+
+function drawLine(position){
+  let myLineWidth;
+  if(document.documentElement.clientWidth<500){
+    myLineWidth = (35/500)*canvas.width;
+  }
+  else{
+    myLineWidth = 35;
+
+  }
+
+  context.beginPath();
+  context.moveTo(firstPosition.x,firstPosition.y);
+  context.lineTo(position.x,position.y);
+  context.strokeStyle = helpLineColor;
+  context.lineWidth = myLineWidth;
+  context.lineCap = "round";
+  context.stroke();
+
+}
+
+function chooseColor(){
+  if(chosenColor === null)
+  {
+    chosenColor = gameColors[Math.floor(Math.random()*gameColors.length)];
+    gameColors.splice(gameColors.indexOf(chosenColor),1);
+  }
+}
+
+function drag(evt){
+  if(dragging === true){
+    let mouseX = evt.clientX-canvas.getBoundingClientRect().left;
+    let mouseY = evt.clientY-canvas.getBoundingClientRect().top;
+    var isTouch = (('ontouchstart' in window) || (navigator.msMaxTouchPoints > 0));
+
+    if(isTouch)
+    {
+        var rect = canvas.getBoundingClientRect();
+        mouseX = evt.changedTouches[0].pageX - rect.left;
+        mouseY = evt.changedTouches[0].pageY - rect.top;
+
+    }
+    restoreSnapshot();
+    drawLine({x:mouseX,y:mouseY});
+  }
+}
+
+
 function redrawLines(){
+
   if(buffer.length>0){
     let myLineWidth;
      for(let j=0;j<buffer.length;j+=2){
@@ -51,8 +112,8 @@ function redrawLines(){
                 if(document.documentElement.clientWidth>500)
                 {
                   context.beginPath();
-                  context.moveTo(buffer[j].obj.firstX+rectWidth/3,buffer[j].obj.firstY+(rectWidth/2.5));
-                  context.lineTo(buffer[j+1].obj.finalX-rectWidth/2.8,buffer[j+1].obj.finalY-(rectWidth/1.6));
+                  context.moveTo(squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstX+rectWidth/3,squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstY+(rectWidth/2.5));
+                  context.lineTo(squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalX-rectWidth/2.8,squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalY-(rectWidth/1.6));
                   context.lineWidth = myLineWidth;
                   context.strokeStyle = buffer[j].color;
                   context.lineCap = "round";
@@ -62,8 +123,8 @@ function redrawLines(){
 
             else if(document.documentElement.clientWidth<=500){
                   context.beginPath();
-                  context.moveTo(buffer[j].obj.firstX+rectWidth/2.5,buffer[j].obj.firstY+rectWidth/2.5);
-                  context.lineTo(buffer[j+1].obj.finalX-rectWidth/2,buffer[j+1].obj.finalY-rectWidth/1.6);
+                  context.moveTo(squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstX+rectWidth/2.5,squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstY+rectWidth/2.5);
+                  context.lineTo(squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalX-rectWidth/2,squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalY-rectWidth/1.6);
                   context.lineWidth = myLineWidth;
                   context.strokeStyle = buffer[j].color;
                   context.lineCap = "round";
@@ -74,8 +135,8 @@ function redrawLines(){
                 if(document.documentElement.clientWidth<=300)
                 {
                   context.beginPath();
-                  context.moveTo(buffer[j].obj.firstX+(rectWidth-5)/2,buffer[j].obj.firstY+15);
-                  context.lineTo(buffer[j+1].obj.finalX-(rectWidth+5)/2,buffer[j+1].obj.finalY-15);
+                  context.moveTo(squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstX+(rectWidth-5)/2,squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstY+15);
+                  context.lineTo(squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalX-(rectWidth+5)/2,squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalY-15);
                   context.lineWidth = myLineWidth;
                   context.strokeStyle = buffer[j].color;
                   context.lineCap = "round";
@@ -84,8 +145,8 @@ function redrawLines(){
                 }
                 else{
                   context.beginPath();
-                  context.moveTo(buffer[j].obj.firstX+(rectWidth-12)/2,buffer[j].obj.firstY+15);
-                  context.lineTo(buffer[j+1].obj.finalX-(rectWidth+10)/2,buffer[j+1].obj.finalY-15);
+                  context.moveTo(squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstX+(rectWidth-12)/2,squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstY+15);
+                  context.lineTo(squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalX-(rectWidth+10)/2,squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalY-15);
                   context.lineWidth = myLineWidth;
                   context.strokeStyle = buffer[j].color;
                   context.lineCap = "round";
@@ -99,8 +160,8 @@ function redrawLines(){
                 {
 
                   context.beginPath();
-                  context.moveTo(buffer[j].obj.firstX+rectWidth/2.3,buffer[j].obj.firstY+rectWidth/2);
-                  context.lineTo(buffer[j+1].obj.finalX-rectWidth/1.5,buffer[j+1].obj.finalY-rectWidth/2);
+                  context.moveTo(squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstX+rectWidth/2.3,squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstY+rectWidth/2);
+                  context.lineTo(squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalX-rectWidth/1.5,squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalY-rectWidth/2);
                   context.lineWidth = myLineWidth;
                   context.strokeStyle = buffer[j].color;
                   context.lineCap = "round";
@@ -111,8 +172,8 @@ function redrawLines(){
                 else if(document.documentElement.clientWidth>500)
                 {
                   context.beginPath();
-                  context.moveTo(buffer[j].obj.firstX+rectWidth/2.3,buffer[j].obj.firstY+rectWidth/2);
-                  context.lineTo(buffer[j+1].obj.finalX-rectWidth/1.5,buffer[j+1].obj.finalY-rectWidth/2);
+                  context.moveTo(squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstX+rectWidth/2.3,squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstY+rectWidth/2);
+                  context.lineTo(squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalX-rectWidth/1.5,squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalY-rectWidth/2);
                   context.lineWidth = myLineWidth;
                   context.strokeStyle = buffer[j].color;
                   context.lineCap = "round";
@@ -123,8 +184,8 @@ function redrawLines(){
                 else if(document.documentElement.clientWidth<=385)
                 {
                   context.beginPath();
-                  context.moveTo(buffer[j].obj.firstX+rectWidth/1.9,buffer[j].obj.firstY+rectWidth/3);
-                  context.lineTo(buffer[j+1].finalX-rectWidth/1.9,buffer[j+1].finalY-rectWidth/1.7);
+                  context.moveTo(squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstX+rectWidth/1.9,squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstY+rectWidth/3);
+                  context.lineTo(squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalX-rectWidth/1.9,squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalY-rectWidth/1.7);
                   context.lineWidth = myLineWidth;
                   context.strokeStyle = buffer[j].color;
                   context.lineCap = "round";
@@ -133,8 +194,8 @@ function redrawLines(){
                 }
                 else {
                   context.beginPath();
-                  context.moveTo(buffer[j].obj.firstX+rectWidth/2,buffer[j].obj.firstY+rectWidth/3);
-                  context.lineTo(buffer[j+1].obj.finalX-rectWidth/1.4,buffer[j+1].obj.finalY-rectWidth/2);
+                  context.moveTo(squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstX+rectWidth/2,squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstY+rectWidth/3);
+                  context.lineTo(squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalX-rectWidth/1.4,squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalY-rectWidth/2);
                   context.lineWidth = myLineWidth;
                   context.strokeStyle = buffer[j].color;
                   context.lineCap = "round";
@@ -144,19 +205,14 @@ function redrawLines(){
               }
               else if(Math.abs(buffer[j].obj.i-buffer[j].obj.j) === Math.abs(buffer[j+1].obj.i-buffer[j].obj.j)){
                 context.beginPath();
-                context.moveTo(buffer[j].obj.firstX+rectWidth/2.3,buffer[j].obj.firstY+rectWidth/2.5);
-                context.lineTo(buffer[j+1].obj.finalX-15,buffer[j+1].obj.finalY-15);
+                context.moveTo(squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstX+rectWidth/2.3,squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstY+rectWidth/2.5);
+                context.lineTo(squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalX-15,squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalY-15);
                 context.lineWidth = myLineWidth;
                 context.strokeStyle = obj[j].color;
                 context.lineCap = "round";
                 context.stroke();
 
               }
-
-
-
-
-
      }
   }
 }
@@ -251,30 +307,6 @@ if(document.documentElement.clientWidth<508)
     spaceY = (55.9/500)*canvas.height;
   }
 
-  //
-  // if(document.documentElement.clientWidth<=350)
-  // {
-  //   context.font = "10pt sans-serif";
-  //   initialX=10;
-  //   initialY = 18;
-  //   spaceX = 54-returnRes()*2.2;
-  //   spaceY = 54-returnRes()*2.2;
-  // }
-  // else if(document.documentElement.clientWidth>=500){
-  //     context.font = "13pt sans-serif";
-  //     initialX = 15;
-  //     initialY = 29;
-  //     spaceX = 56;
-  //     spaceY = 55.9;
-  //   }
-  //   else{
-  //       context.font = "13pt sans-serif";
-  //       initialX=10;
-  //       initialY = 30;
-  //       spaceX = 54-returnRes()*2.5;
-  //       spaceY = 54-returnRes()*2.5;
-  //
-  //   }
 
   letterX = initialX;
   letterY = initialY;
@@ -346,24 +378,15 @@ let currentElem = 0;
   let startSquare=null,endSquare=null;
   var data = 0;
 
-  let chosenColor = null;
+
   function gameLogic(evt){
-    /*
-      Pe diagonala secundara suma lui i si j este aceaisi
-      Asa ca pentru a verifica corectitudinea jocului vom proceda asa:
-        verificam daca cele doua patrate selectate de user au acelasi i
-        sau acelasi j (sunt pe acelasi linie sau pe aceiasi coloana)
-        daca nu sunt pe aceiasi linie sau aceiasi coloana atunci verificam diagonalele si acolo avem asa:
-
-          -> daca doua elemente sunt pe aceiasi coloana atunci:
-            SUMA LUI I SI J sau DIFERENTA ABSOLUTA DINTRE I SI J e aceiasi
-
-    */
 
 
       let mouseX = evt.clientX-canvas.getBoundingClientRect().left;
       let mouseY = evt.clientY-canvas.getBoundingClientRect().top;
       var isTouch = (('ontouchstart' in window) || (navigator.msMaxTouchPoints > 0));
+      chooseColor();
+
 
       data++;
 
@@ -371,24 +394,7 @@ let currentElem = 0;
       {
 
         var rect = canvas.getBoundingClientRect();
-        // if(data === 2)
-        // {
-        //
-        //             mouseX = evt.targetTouches[0].pageX - rect.left;
-        //             mouseY = evt.targetTouches[0].pageY - rect.top;
-        //
-        //
-        //   data = 0;
-        //   // console.log(evt);
-        //   // console.log("Prima data");
-        //
-        // }
-        // else{
-        //
-        //   mouseX = evt.changedTouches[evt.changedTouches.length-1].pageX - rect.left;
-        //   mouseY = evt.changedTouches[even.changedTouches.length-1].pageY - rect.top;
-        //
-        // }
+
         if(evt.type === "touchstart")
         {
           mouseX = evt.targetTouches[0].pageX-rect.left;
@@ -401,6 +407,16 @@ let currentElem = 0;
         }
 
 
+      }
+      if(evt.type==="mousedown"||evt.type==="touchstart"){
+        dragging = true;
+        takeSnapshot();
+        firstPosition = {x:mouseX,y:mouseY};
+        drawLine({x:mouseX,y:mouseY});
+      }
+      else if(evt.type==="mouseup" || evt.type ==="touchend"){
+        dragging = false;
+        restoreSnapshot();
       }
 
       context.fillStyle="red";
@@ -424,18 +440,11 @@ let currentElem = 0;
 
           if(startSquare===null)
           {
-            ///asta inseamna ca am dat doar startul
+
             startSquare = elem;
 
           }
           else{
-
-            ///aici vine logica din spate la tot
-            if(chosenColor === null)
-            {
-              chosenColor = gameColors[Math.floor(Math.random()*gameColors.length)];
-              gameColors.splice(gameColors.indexOf(chosenColor),1);
-            }
 
             endSquare = elem;
 
@@ -446,40 +455,14 @@ let currentElem = 0;
             }
 
             else{
-              ///implementarea de verificare
-
               let aux;
-
               let myLineWidth;
-              ///aici ne vom ocupa de grosimea linii in functie de dimensiunea ecranului
-              // if(document.documentElement.clientWidth<=300)
-              // {
-              //   myLineWidth = 20;
-              // }
-              // else if(document.documentElement.clientWidth<400)
-              // {
-              //   myLineWidth = 30;
-              // }
-              // else if(document.documentElement.clientWidth<500)
-              // {
-              //   myLineWidth =30;
-              //
-              // }
               if(document.documentElement.clientWidth<500){
                 myLineWidth = (35/500)*canvas.width;
               }
               else{
                 myLineWidth = 35;
-
               }
-                // console.log("start Square");
-                // console.log(startSquare);
-                // console.log("end Square");
-                // console.log(endSquare);
-                // console.log("-------------------");
-
-
-
               if(startSquare.i === endSquare.i)
               {
                 if(startSquare.firstX>=endSquare.finalX)
@@ -490,7 +473,7 @@ let currentElem = 0;
 
                 }
 
-                ///acuma iteram sa vedem daca am gasit cuvantul
+
                 let tempArr = [];
                 for(let k=startSquare.j;k<=endSquare.j;k++)
                 {
@@ -546,10 +529,6 @@ let currentElem = 0;
                   },400);
                   audio.play();
                 }
-
-
-
-
               }
               else if(startSquare.j === endSquare.j)
               {
@@ -813,12 +792,14 @@ let currentElem = 0;
   }
 
   function handleResize(){
+    context.clearRect(0,0,canvas.width,canvas.height);
     render();
-    redrawLines();
     setTimeout(function(){
       draw();
+      redrawLines();
+    },100);
 
-    },100)
+
 
   }
 
@@ -826,9 +807,11 @@ let currentElem = 0;
   window.addEventListener("resize",handleResize);
   playBtn.addEventListener("click",startGame);
   canvas.addEventListener("mousedown",gameLogic);
+  canvas.addEventListener("mousemove",drag);
   canvas.addEventListener("mouseup",gameLogic);
 
   canvas.addEventListener("touchstart",gameLogic,{passive:true});
+  canvas.addEventListener("touchmove",drag,{passive:true});
   canvas.addEventListener("touchend",gameLogic,{passive:true});
 
 
