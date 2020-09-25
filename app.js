@@ -11,6 +11,8 @@
   const congratulations = document.querySelector(".congratulations");
   const confettiContainer = document.querySelector(".container");
   ///aici avem functia folosita pentru a renderui elementele pe pagina
+  let rectWidth;
+  let rectHeight;
   let gameArr = [
     [ "L", "D", "N", "K", "H", "W", "J", "M", "H" ],
     [  "O", "T", "I", "M", "O","T" , "E", "I", "I"],
@@ -26,9 +28,138 @@
 let gameColors = ["rgba(255, 255, 0, 0.5)","rgba(255,0,0,0.5)","rgba(0, 204, 0,0.5)","rgba(0, 51, 204,0.5)","rgba(204, 0, 153,0.5)","rgb(255, 102, 0,0.5)"];
 let squareLetter = [];
 let wordsToBeFound = ["timotei","lois","pavel","isus","har"];
+const buffer = [];
 
 let foundedWords = 0;
 const wordsCount = wordsToBeFound.length;
+
+///Functia asta este folosita pentru a putea itera printre elementele
+/// care sunt in buffer si a le redesena
+function redrawLines(){
+  if(buffer.length>0){
+    let myLineWidth;
+     for(let j=0;j<buffer.length;j+=2){
+               if(document.documentElement.clientWidth<500){
+                 myLineWidth = (35/500)*canvas.width;
+               }
+               else{
+                 myLineWidth = 35;
+
+               }
+
+              if(buffer[j].obj.i === buffer[j+1].obj.i){
+                if(document.documentElement.clientWidth>500)
+                {
+                  context.beginPath();
+                  context.moveTo(buffer[j].obj.firstX+rectWidth/3,buffer[j].obj.firstY+(rectWidth/2.5));
+                  context.lineTo(buffer[j+1].obj.finalX-rectWidth/2.8,buffer[j+1].obj.finalY-(rectWidth/1.6));
+                  context.lineWidth = myLineWidth;
+                  context.strokeStyle = buffer[j].color;
+                  context.lineCap = "round";
+                  context.stroke();
+
+                }
+
+            else if(document.documentElement.clientWidth<=500){
+                  context.beginPath();
+                  context.moveTo(buffer[j].obj.firstX+rectWidth/2.5,buffer[j].obj.firstY+rectWidth/2.5);
+                  context.lineTo(buffer[j+1].obj.finalX-rectWidth/2,buffer[j+1].obj.finalY-rectWidth/1.6);
+                  context.lineWidth = myLineWidth;
+                  context.strokeStyle = buffer[j].color;
+                  context.lineCap = "round";
+                  context.stroke();
+                }
+              }
+              else if(buffer[j].obj.j === buffer[j].obj.j){
+                if(document.documentElement.clientWidth<=300)
+                {
+                  context.beginPath();
+                  context.moveTo(buffer[j].obj.firstX+(rectWidth-5)/2,buffer[j].obj.firstY+15);
+                  context.lineTo(buffer[j+1].obj.finalX-(rectWidth+5)/2,buffer[j+1].obj.finalY-15);
+                  context.lineWidth = myLineWidth;
+                  context.strokeStyle = buffer[j].color;
+                  context.lineCap = "round";
+                  context.stroke();
+
+                }
+                else{
+                  context.beginPath();
+                  context.moveTo(buffer[j].obj.firstX+(rectWidth-12)/2,buffer[j].obj.firstY+15);
+                  context.lineTo(buffer[j+1].obj.finalX-(rectWidth+10)/2,buffer[j+1].obj.finalY-15);
+                  context.lineWidth = myLineWidth;
+                  context.strokeStyle = buffer[j].color;
+                  context.lineCap = "round";
+                  context.stroke();
+
+                }
+              }
+              else if(buffer[j].obj.i+buffer[j].obj.j === buffer[j+1].obj.i+buffer[j+1].obj.j){
+
+                if(document.documentElement.clientWidth<300 )
+                {
+
+                  context.beginPath();
+                  context.moveTo(buffer[j].obj.firstX+rectWidth/2.3,buffer[j].obj.firstY+rectWidth/2);
+                  context.lineTo(buffer[j+1].obj.finalX-rectWidth/1.5,buffer[j+1].obj.finalY-rectWidth/2);
+                  context.lineWidth = myLineWidth;
+                  context.strokeStyle = buffer[j].color;
+                  context.lineCap = "round";
+                  context.stroke();
+
+                }
+
+                else if(document.documentElement.clientWidth>500)
+                {
+                  context.beginPath();
+                  context.moveTo(buffer[j].obj.firstX+rectWidth/2.3,buffer[j].obj.firstY+rectWidth/2);
+                  context.lineTo(buffer[j+1].obj.finalX-rectWidth/1.5,buffer[j+1].obj.finalY-rectWidth/2);
+                  context.lineWidth = myLineWidth;
+                  context.strokeStyle = buffer[j].color;
+                  context.lineCap = "round";
+                  context.stroke();
+
+
+                }
+                else if(document.documentElement.clientWidth<=385)
+                {
+                  context.beginPath();
+                  context.moveTo(buffer[j].obj.firstX+rectWidth/1.9,buffer[j].obj.firstY+rectWidth/3);
+                  context.lineTo(buffer[j+1].finalX-rectWidth/1.9,buffer[j+1].finalY-rectWidth/1.7);
+                  context.lineWidth = myLineWidth;
+                  context.strokeStyle = buffer[j].color;
+                  context.lineCap = "round";
+                  context.stroke();
+
+                }
+                else {
+                  context.beginPath();
+                  context.moveTo(buffer[j].obj.firstX+rectWidth/2,buffer[j].obj.firstY+rectWidth/3);
+                  context.lineTo(buffer[j+1].obj.finalX-rectWidth/1.4,buffer[j+1].obj.finalY-rectWidth/2);
+                  context.lineWidth = myLineWidth;
+                  context.strokeStyle = buffer[j].color;
+                  context.lineCap = "round";
+                  context.stroke();
+
+                }
+              }
+              else if(Math.abs(buffer[j].obj.i-buffer[j].obj.j) === Math.abs(buffer[j+1].obj.i-buffer[j].obj.j)){
+                context.beginPath();
+                context.moveTo(buffer[j].obj.firstX+rectWidth/2.3,buffer[j].obj.firstY+rectWidth/2.5);
+                context.lineTo(buffer[j+1].obj.finalX-15,buffer[j+1].obj.finalY-15);
+                context.lineWidth = myLineWidth;
+                context.strokeStyle = obj[j].color;
+                context.lineCap = "round";
+                context.stroke();
+
+              }
+
+
+
+
+
+     }
+  }
+}
 
   const render = function(){
 
@@ -93,8 +224,7 @@ if(document.documentElement.clientWidth<508)
   let letterY ;
   let spaceX;
   let spaceY;
-  let rectWidth;
-  let rectHeight;
+
   ///aici desenam ce avem de desenat
   function draw(){
     squareLetter = [];
@@ -162,6 +292,7 @@ let currentElem = 0;
      context.fillText(gameArr[j][i],letterX,letterY);
      letterX+=spaceX;
      currentElem++;
+
    }
    letterX = initialX;
    letterY+=spaceY;
@@ -380,6 +511,7 @@ let currentElem = 0;
                     context.strokeStyle = chosenColor;
                     context.lineCap = "round";
                     context.stroke();
+                    buffer.push({obj:startSquare,color:chosenColor},{obj:endSquare,color:chosenColor});
                   }
 
               else if(document.documentElement.clientWidth<=500){
@@ -389,7 +521,8 @@ let currentElem = 0;
                     context.lineWidth = myLineWidth;
                     context.strokeStyle = chosenColor;
                     context.lineCap = "round";
-                    context.stroke()
+                    context.stroke();
+                    buffer.push({obj:startSquare,color:chosenColor},{obj:endSquare,color:chosenColor});
 
                   }
 
@@ -450,6 +583,7 @@ let currentElem = 0;
                     context.strokeStyle = chosenColor;
                     context.lineCap = "round";
                     context.stroke();
+                    buffer.push({obj:startSquare,color:chosenColor},{obj:endSquare,color:chosenColor});
                   }
                   else{
                     context.beginPath();
@@ -459,6 +593,7 @@ let currentElem = 0;
                     context.strokeStyle = chosenColor;
                     context.lineCap = "round";
                     context.stroke();
+                    buffer.push({obj:startSquare,color:chosenColor},{obj:endSquare,color:chosenColor});
                   }
 
                   wordsToBeFound.splice(wordsToBeFound.indexOf(resString),1);
@@ -530,6 +665,7 @@ let currentElem = 0;
                   context.strokeStyle = chosenColor;
                   context.lineCap = "round";
                   context.stroke();
+                  buffer.push({obj:startSquare,color:chosenColor},{obj:endSquare,color:chosenColor});
                 }
 
                 else if(document.documentElement.clientWidth>500)
@@ -541,7 +677,7 @@ let currentElem = 0;
                   context.strokeStyle = chosenColor;
                   context.lineCap = "round";
                   context.stroke();
-
+                  buffer.push({obj:startSquare,color:chosenColor},{obj:endSquare,color:chosenColor});
 
                 }
                 else if(document.documentElement.clientWidth<=385)
@@ -553,6 +689,7 @@ let currentElem = 0;
                   context.strokeStyle = chosenColor;
                   context.lineCap = "round";
                   context.stroke();
+                  buffer.push({obj:startSquare,color:chosenColor},{obj:endSquare,color:chosenColor});
                 }
                 else {
                   context.beginPath();
@@ -562,6 +699,7 @@ let currentElem = 0;
                   context.strokeStyle = chosenColor;
                   context.lineCap = "round";
                   context.stroke();
+                  buffer.push({obj:startSquare,color:chosenColor},{obj:endSquare,color:chosenColor});
                 }
 
                 wordsToBeFound.splice(wordsToBeFound.indexOf(resString),1);
@@ -619,6 +757,7 @@ let currentElem = 0;
                   context.strokeStyle = chosenColor;
                   context.lineCap = "round";
                   context.stroke();
+                  buffer.push({obj:startSquare,color:chosenColor},{obj:endSquare,color:chosenColor});
                   wordsToBeFound.splice(wordsToBeFound.indexOf(resString),1);
                   canvas.classList.add("correct-answer");
                   setTimeout(function(){
@@ -675,6 +814,7 @@ let currentElem = 0;
 
   function handleResize(){
     render();
+    redrawLines();
     setTimeout(function(){
       draw();
 
