@@ -19,12 +19,12 @@
     [ "L", "D", "N", "K", "H", "W", "J", "M", "H" ],
     [  "O", "T", "I", "M", "O","T" , "E", "I", "I"],
     ["I","B","G","X","B","Q","Q","C","W"],
-    ["S","D","I","S","U","S","V","F","Q"],
+    ["S","D","Z","T","Q","S","V","F","Q"],
     ["Y","J","D","C","P","F","H","K","S"],
     ["U","D","N","S","O","A","K","H","I"],
     ["G","M","D","Z","R","M","V","S","B"],
     ["T","I","M","O","T","E","U","E","D"],
-    ["I","S","U","S","T","E","I","C","L"]
+    ["O","S","T","A","S","E","I","C","L"]
 
 ];
 let helpLineColor = "rgba(0,0,0,0.6)";
@@ -34,6 +34,7 @@ let wordsToBeFound = ["timotei","lois","pavel","isus","har"];
 const buffer = [];
 let dragging = false;
 let snapshot;
+let startSquare=null,endSquare=null;
 
 let foundedWords = 0;
 const wordsCount = wordsToBeFound.length;
@@ -77,6 +78,7 @@ function chooseColor(){
 }
 
 function drag(evt){
+
   if(dragging === true){
     let mouseX = evt.clientX-canvas.getBoundingClientRect().left;
     let mouseY = evt.clientY-canvas.getBoundingClientRect().top;
@@ -87,8 +89,16 @@ function drag(evt){
         var rect = canvas.getBoundingClientRect();
         mouseX = evt.changedTouches[0].pageX - rect.left;
         mouseY = evt.changedTouches[0].pageY - rect.top;
+        if(mouseX+rect.left>canvas.width+rect.left || mouseX+rect.left<rect.left){
+          myAlert();
+        }
+        else if(mouseY+rect.top>canvas.height+rect.top|| mouseY+rect.top<rect.top){
+          myAlert();
+        }
+
 
     }
+
     restoreSnapshot();
     drawLine({x:mouseX,y:mouseY});
   }
@@ -375,7 +385,7 @@ let currentElem = 0;
   */
 
 ///aceste variabile le folosim pentru a stoca
-  let startSquare=null,endSquare=null;
+
   var data = 0;
 
 
@@ -422,6 +432,10 @@ let currentElem = 0;
       context.fillStyle="red";
 
       function win(){
+        const mainLogo = document.querySelector("#logo");
+        if(document.documentElement.clientWidth<=500){
+          mainLogo.classList.remove("no-display");
+        }
         setTimeout(function(){
             canvas.classList.add("no-display");
             wordCounterContainer.classList.add("no-display");
@@ -447,7 +461,7 @@ let currentElem = 0;
           else{
 
             endSquare = elem;
-
+            // debugger;
             if(endSquare.i===startSquare.i && endSquare.j === startSquare.j)
             {
               endSquare = null;
@@ -781,6 +795,10 @@ let currentElem = 0;
   */
 
   function startGame(){
+    const mainLogo = document.querySelector("#logo");
+    if(document.documentElement.clientWidth<=500){
+      mainLogo.classList.add("no-display");
+    }
     firstScreen.classList.add("no-display");
     canvas.classList.remove("no-display");
     wordCounterContainer.classList.remove("no-display");
@@ -803,16 +821,41 @@ let currentElem = 0;
 
   }
 
+
+
+
+
+  function myAlert(){
+    if(dragging===true){
+      dragging = false;
+      startSquare = null;
+      endSquare = null;
+      restoreSnapshot();
+      canvas.classList.add("canvas-shadow");
+      setTimeout(function(){
+        canvas.classList.remove("canvas-shadow");
+      },200);
+      audio.play();
+    }
+
+  }
+
+  function outOfCanvas(){
+
+  }
+
   render();
   window.addEventListener("resize",handleResize);
   playBtn.addEventListener("click",startGame);
   canvas.addEventListener("mousedown",gameLogic);
   canvas.addEventListener("mousemove",drag);
   canvas.addEventListener("mouseup",gameLogic);
+  canvas.addEventListener("mouseout",myAlert);
 
   canvas.addEventListener("touchstart",gameLogic,{passive:true});
   canvas.addEventListener("touchmove",drag,{passive:true});
   canvas.addEventListener("touchend",gameLogic,{passive:true});
+
 
 
 })();
