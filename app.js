@@ -8,6 +8,7 @@
   const firstScreen = document.querySelector(".display-before");
   const wordCounter = document.querySelector(".word-num");
   const wordCounterContainer = document.querySelector(".word-num-container");
+  const wordNumContainer = document.querySelector(".count-words");
   const congratulations = document.querySelector(".congratulations");
   const confettiContainer = document.querySelector(".container");
   let firstPosition;
@@ -16,21 +17,21 @@
   let rectHeight;
   let chosenColor = null;
   let gameArr = [
-    [ "L", "D", "N", "K", "H", "W", "J", "M", "H" ],
-    [  "O", "T", "I", "M", "O","T" , "E", "I", "I"],
-    ["I","B","G","X","B","Q","Q","C","W"],
-    ["S","D","Z","T","Q","S","V","F","Q"],
-    ["Y","J","D","C","P","F","H","K","S"],
-    ["U","D","N","S","O","A","K","H","I"],
-    ["G","M","D","Z","R","M","V","S","B"],
-    ["T","I","M","O","T","E","U","E","D"],
-    ["O","S","T","A","S","E","I","C","L"]
+    ["L","D","N","K","H","W","J","M","P"],
+    ["O","Z","G","B","R","I","E","A","P"],
+    ["I","B","G","X","S","Q","C","A","N"],
+    ["S","Z","Z","U","Q","E","E","F","O"],
+    ["Y","J","S","C","P","A","H","K","C"],
+    ["U","D","N","S","O","A","K","H","A"],
+    ["G","M","D","Z","R","J","V","S","I"],
+    ["T","I","M","O","T","U","U","E","D"],
+    ["O","S","Z","W","S","G","I","C","L"]
 
 ];
 let helpLineColor = "rgba(0,0,0,0.6)";
-let gameColors = ["rgba(255, 255, 0, 0.5)","rgba(255,0,0,0.5)","rgba(0, 204, 0,0.5)","rgba(0, 51, 204,0.5)","rgba(204, 0, 153,0.5)","rgb(255, 102, 0,0.5)"];
+let gameColors = ["rgba(255, 255, 0, 0.5)","rgba(255,0,0,0.5)","rgba(0, 204, 0,0.5)","rgba(0, 51, 204,0.5)","rgba(204, 0, 153,0.5)","rgb(255, 102, 0,0.5)","rgba(255, 102, 0,0.5)","rgba(153, 0, 51,0.5)","rgba(0, 204, 255,0.5)"];
 let squareLetter = [];
-let wordsToBeFound = ["timotei","lois","pavel","isus","har"];
+let wordsToBeFound = ["lois","pavel","isus","har","diacon","jug","pace"];
 const buffer = [];
 let dragging = false;
 let snapshot;
@@ -83,7 +84,7 @@ function drag(evt){
     let mouseX = evt.clientX-canvas.getBoundingClientRect().left;
     let mouseY = evt.clientY-canvas.getBoundingClientRect().top;
     var isTouch = (('ontouchstart' in window) || (navigator.msMaxTouchPoints > 0));
-
+    data++;
     if(isTouch)
     {
         var rect = canvas.getBoundingClientRect();
@@ -110,6 +111,7 @@ function redrawLines(){
   if(buffer.length>0){
     let myLineWidth;
      for(let j=0;j<buffer.length;j+=2){
+
                if(document.documentElement.clientWidth<500){
                  myLineWidth = (35/500)*canvas.width;
                }
@@ -141,7 +143,7 @@ function redrawLines(){
                   context.stroke();
                 }
               }
-              else if(buffer[j].obj.j === buffer[j].obj.j){
+              else if(buffer[j].obj.j === buffer[j+1].obj.j){
                 if(document.documentElement.clientWidth<=300)
                 {
                   context.beginPath();
@@ -166,59 +168,21 @@ function redrawLines(){
               }
               else if(buffer[j].obj.i+buffer[j].obj.j === buffer[j+1].obj.i+buffer[j+1].obj.j){
 
-                if(document.documentElement.clientWidth<300 )
-                {
+                context.beginPath();
+                context.moveTo(squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstX+rectWidth/3.5,squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstY+rectWidth/3.3);
+                context.lineTo(squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalX-rectWidth,squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalY-rectWidth/2);
+                context.lineWidth = myLineWidth;
+                context.strokeStyle = buffer[j].color;
+                context.lineCap = "round";
+                context.stroke();
 
-                  context.beginPath();
-                  context.moveTo(squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstX+rectWidth/2.3,squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstY+rectWidth/2);
-                  context.lineTo(squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalX-rectWidth/1.5,squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalY-rectWidth/2);
-                  context.lineWidth = myLineWidth;
-                  context.strokeStyle = buffer[j].color;
-                  context.lineCap = "round";
-                  context.stroke();
-
-                }
-
-                else if(document.documentElement.clientWidth>500)
-                {
-                  context.beginPath();
-                  context.moveTo(squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstX+rectWidth/2.3,squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstY+rectWidth/2);
-                  context.lineTo(squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalX-rectWidth/1.5,squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalY-rectWidth/2);
-                  context.lineWidth = myLineWidth;
-                  context.strokeStyle = buffer[j].color;
-                  context.lineCap = "round";
-                  context.stroke();
-
-
-                }
-                else if(document.documentElement.clientWidth<=385)
-                {
-                  context.beginPath();
-                  context.moveTo(squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstX+rectWidth/1.9,squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstY+rectWidth/3);
-                  context.lineTo(squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalX-rectWidth/1.9,squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalY-rectWidth/1.7);
-                  context.lineWidth = myLineWidth;
-                  context.strokeStyle = buffer[j].color;
-                  context.lineCap = "round";
-                  context.stroke();
-
-                }
-                else {
-                  context.beginPath();
-                  context.moveTo(squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstX+rectWidth/2,squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstY+rectWidth/3);
-                  context.lineTo(squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalX-rectWidth/1.4,squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalY-rectWidth/2);
-                  context.lineWidth = myLineWidth;
-                  context.strokeStyle = buffer[j].color;
-                  context.lineCap = "round";
-                  context.stroke();
-
-                }
               }
-              else if(Math.abs(buffer[j].obj.i-buffer[j].obj.j) === Math.abs(buffer[j+1].obj.i-buffer[j].obj.j)){
+              else if(Math.abs(buffer[j].obj.i-buffer[j].obj.j) === Math.abs(buffer[j+1].obj.i-buffer[j+1].obj.j)){
                 context.beginPath();
                 context.moveTo(squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstX+rectWidth/2.3,squareLetter[buffer[j].obj.i*9+buffer[j].obj.j].firstY+rectWidth/2.5);
                 context.lineTo(squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalX-15,squareLetter[buffer[j+1].obj.i*9+buffer[j+1].obj.j].finalY-15);
                 context.lineWidth = myLineWidth;
-                context.strokeStyle = obj[j].color;
+                context.strokeStyle = buffer[j].color;
                 context.lineCap = "round";
                 context.stroke();
 
@@ -392,13 +356,12 @@ let currentElem = 0;
   function gameLogic(evt){
 
 
-      let mouseX = evt.clientX-canvas.getBoundingClientRect().left;
-      let mouseY = evt.clientY-canvas.getBoundingClientRect().top;
+      let mouseX,mouseY;
       var isTouch = (('ontouchstart' in window) || (navigator.msMaxTouchPoints > 0));
       chooseColor();
 
 
-      data++;
+
 
       if(isTouch)
       {
@@ -418,6 +381,14 @@ let currentElem = 0;
 
 
       }
+      else{
+
+         mouseX = evt.clientX-canvas.getBoundingClientRect().left;
+         mouseY = evt.clientY-canvas.getBoundingClientRect().top;
+
+
+      }
+
       if(evt.type==="mousedown"||evt.type==="touchstart"){
         dragging = true;
         takeSnapshot();
@@ -432,6 +403,7 @@ let currentElem = 0;
       context.fillStyle="red";
 
       function win(){
+        wordNumContainer.classList.add(".no-display");
         const mainLogo = document.querySelector("#logo");
         if(document.documentElement.clientWidth<=500){
           mainLogo.classList.remove("no-display");
@@ -461,7 +433,7 @@ let currentElem = 0;
           else{
 
             endSquare = elem;
-            // debugger;
+
             if(endSquare.i===startSquare.i && endSquare.j === startSquare.j)
             {
               endSquare = null;
@@ -477,6 +449,7 @@ let currentElem = 0;
               else{
                 myLineWidth = 35;
               }
+
               if(startSquare.i === endSquare.i)
               {
                 if(startSquare.firstX>=endSquare.finalX)
@@ -495,7 +468,11 @@ let currentElem = 0;
                 }
                 let resString = tempArr.join("");
                 resString = resString.toLowerCase();
-                if(wordsToBeFound.indexOf(resString)!=-1)
+                tempArr.reverse();
+                let reverseString = tempArr.join("");
+                reverseString = reverseString.toLowerCase();
+
+                if(wordsToBeFound.indexOf(resString)!=-1 || wordsToBeFound.indexOf(reverseString)!=-1)
                 {
                   foundedWords++;
                   updateWords();
@@ -522,8 +499,11 @@ let currentElem = 0;
                     buffer.push({obj:startSquare,color:chosenColor},{obj:endSquare,color:chosenColor});
 
                   }
-
+                  if(wordsToBeFound.indexOf(resString)!=-1)
                   wordsToBeFound.splice(wordsToBeFound.indexOf(resString),1);
+                  else if(wordsToBeFound.indexOf(reverseString)!=-1)
+                  wordsToBeFound.splice(wordsToBeFound.indexOf(reverseString),1);
+
                   canvas.classList.add("correct-answer");
                   setTimeout(function(){
                     canvas.classList.remove("correct-answer");
@@ -547,7 +527,6 @@ let currentElem = 0;
               else if(startSquare.j === endSquare.j)
               {
 
-
                 if(startSquare.firstY>=endSquare.finalY)
                 {
                   aux = endSquare;
@@ -563,22 +542,26 @@ let currentElem = 0;
                 }
                 let resString = tempArr.join("");
                 resString = resString.toLowerCase();
-                if(wordsToBeFound.indexOf(resString)!=-1)
+                tempArr.reverse();
+                let reverseString = tempArr.join("");
+                reverseString = reverseString.toLowerCase();
+
+                if(wordsToBeFound.indexOf(resString)!=-1 || wordsToBeFound.indexOf(reverseString)!=-1)
                 {
                   foundedWords++;
                   updateWords();
-                  if(document.documentElement.clientWidth<=300)
-                  {
-                    context.beginPath();
-                    context.moveTo(startSquare.firstX+(rectWidth-5)/2,startSquare.firstY+15);
-                    context.lineTo(endSquare.finalX-(rectWidth+5)/2,endSquare.finalY-15);
-                    context.lineWidth = myLineWidth;
-                    context.strokeStyle = chosenColor;
-                    context.lineCap = "round";
-                    context.stroke();
-                    buffer.push({obj:startSquare,color:chosenColor},{obj:endSquare,color:chosenColor});
-                  }
-                  else{
+                  // if(document.documentElement.clientWidth<=100)
+                  // {
+                  //   context.beginPath();
+                  //   context.moveTo(startSquare.firstX+(rectWidth-5)/2,startSquare.firstY+15);
+                  //   context.lineTo(endSquare.finalX-(rectWidth+5)/2,endSquare.finalY-15);
+                  //   context.lineWidth = myLineWidth;
+                  //   context.strokeStyle = chosenColor;
+                  //   context.lineCap = "round";
+                  //   context.stroke();
+                  //   buffer.push({obj:startSquare,color:chosenColor},{obj:endSquare,color:chosenColor});
+                  // }
+
                     context.beginPath();
                     context.moveTo(startSquare.firstX+(rectWidth-12)/2,startSquare.firstY+15);
                     context.lineTo(endSquare.finalX-(rectWidth+10)/2,endSquare.finalY-15);
@@ -587,9 +570,12 @@ let currentElem = 0;
                     context.lineCap = "round";
                     context.stroke();
                     buffer.push({obj:startSquare,color:chosenColor},{obj:endSquare,color:chosenColor});
-                  }
 
-                  wordsToBeFound.splice(wordsToBeFound.indexOf(resString),1);
+                    if(wordsToBeFound.indexOf(resString)!=-1)
+                    wordsToBeFound.splice(wordsToBeFound.indexOf(resString),1);
+                    else if(wordsToBeFound.indexOf(reverseString)!=-1)
+                    wordsToBeFound.splice(wordsToBeFound.indexOf(reverseString),1);
+
                   canvas.classList.add("correct-answer");
                   setTimeout(function(){
                     canvas.classList.remove("correct-answer");
@@ -648,52 +634,14 @@ let currentElem = 0;
               {
                 foundedWords++;
                 updateWords();
-                if(document.documentElement.clientWidth<300 )
-                {
-
-                  context.beginPath();
-                  context.moveTo(startSquare.firstX+rectWidth/2.3,startSquare.firstY+rectWidth/2);
+                context.beginPath();
+                  context.moveTo(startSquare.firstX+rectWidth/3.5,startSquare.firstY+rectWidth/3.3);
                   context.lineTo(endSquare.finalX-rectWidth/1.5,endSquare.finalY-rectWidth/2);
                   context.lineWidth = myLineWidth;
                   context.strokeStyle = chosenColor;
                   context.lineCap = "round";
                   context.stroke();
                   buffer.push({obj:startSquare,color:chosenColor},{obj:endSquare,color:chosenColor});
-                }
-
-                else if(document.documentElement.clientWidth>500)
-                {
-                  context.beginPath();
-                  context.moveTo(startSquare.firstX+rectWidth/2.3,startSquare.firstY+rectWidth/2);
-                  context.lineTo(endSquare.finalX-rectWidth/1.5,endSquare.finalY-rectWidth/2);
-                  context.lineWidth = myLineWidth;
-                  context.strokeStyle = chosenColor;
-                  context.lineCap = "round";
-                  context.stroke();
-                  buffer.push({obj:startSquare,color:chosenColor},{obj:endSquare,color:chosenColor});
-
-                }
-                else if(document.documentElement.clientWidth<=385)
-                {
-                  context.beginPath();
-                  context.moveTo(startSquare.firstX+rectWidth/1.9,startSquare.firstY+rectWidth/3);
-                  context.lineTo(endSquare.finalX-rectWidth/1.9,endSquare.finalY-rectWidth/1.7);
-                  context.lineWidth = myLineWidth;
-                  context.strokeStyle = chosenColor;
-                  context.lineCap = "round";
-                  context.stroke();
-                  buffer.push({obj:startSquare,color:chosenColor},{obj:endSquare,color:chosenColor});
-                }
-                else {
-                  context.beginPath();
-                  context.moveTo(startSquare.firstX+rectWidth/2,startSquare.firstY+rectWidth/3);
-                  context.lineTo(endSquare.finalX-rectWidth/1.4,endSquare.finalY-rectWidth/2);
-                  context.lineWidth = myLineWidth;
-                  context.strokeStyle = chosenColor;
-                  context.lineCap = "round";
-                  context.stroke();
-                  buffer.push({obj:startSquare,color:chosenColor},{obj:endSquare,color:chosenColor});
-                }
 
                 wordsToBeFound.splice(wordsToBeFound.indexOf(resString),1);
                 canvas.classList.add("correct-answer");
@@ -809,6 +757,7 @@ let currentElem = 0;
     },100)
   }
 
+
   function handleResize(){
     context.clearRect(0,0,canvas.width,canvas.height);
     render();
@@ -840,7 +789,12 @@ let currentElem = 0;
 
   }
 
-  function outOfCanvas(){
+  function temporary(){
+    const d = document.querySelector(".display-before");
+    const c = document.querySelector(".congratulations");
+
+    d.classList.add("no-display");
+    c.classList.remove("no-display");
 
   }
 
@@ -855,7 +809,5 @@ let currentElem = 0;
   canvas.addEventListener("touchstart",gameLogic,{passive:true});
   canvas.addEventListener("touchmove",drag,{passive:true});
   canvas.addEventListener("touchend",gameLogic,{passive:true});
-
-
 
 })();
