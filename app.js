@@ -414,6 +414,12 @@ let currentElem = 0;
             congratulations.classList.remove("no-display");
             confettiContainer.classList.remove("no-display");
             document.body.setAttribute("style","overflow-x:hidden; overflow-y:hidden");
+            const verset = document.querySelector(".verset");
+            const versetHeader = document.querySelector(".verset-header");
+            versetHeader.textContent = "Fugi de poftele tinereţii şi urmăreşte dreptatea, credinţa, dragostea, pacea, împreună cu cei care-L cheamă pe Domnul dintr-o inimă curată!";
+            verset.textContent = "2Timotei 2:22";
+
+
         },500);
 
 
